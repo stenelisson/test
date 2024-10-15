@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trips ja Traps</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            background-color: #fff;
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+        .cell:hover {
+            background-color: #f0f0f0;
+        }
+        .winner {
+            margin-top: 20px;
+            text-align: center;
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <h1>Trips ja Traps</h1>
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <div class="winner" id="winner"></div>
+        <button onclick="resetGame()">Alusta uuesti</button>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        const winnerDisplay = document.getElementById('winner');
+        let currentPlayer = 'X';
+        let gameState = Array(9).fill(null);
+        let gameActive = true;
+
+        board.addEventListener('click', function(e) {
+            if (!gameActive) return;
+            const cell = e.target;
+            const index = cell.getAttribute('data-index');
+
+            if (!gameState[index]) {
+                gameState[index] = currentPlayer;
+                cell.textContent = currentPlayer;
+                if (checkWinner()) {
+                    winnerDisplay.textContent = `Mängija ${currentPlayer} võitis!`;
+                    gameActive = false;
+                } else if (!gameState.includes(null)) {
+                    winnerDisplay.textContent = 'Viik!';
+                    gameActive = false;
+                }
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            }
+        });
+
+        function checkWinner() {
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                [0, 4, 8], [2, 4, 6]  // diagonals
+            ];
+            return winningCombinations.some(combination => {
+                return combination.every(index => gameState[index] === currentPlayer);
+            });
+        }
+
+        function resetGame() {
+            gameState = Array(9).fill(null);
+            document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+            currentPlayer = 'X';
+            winnerDisplay.textContent = '';
+            gameActive = true;
+        }
+    </script>
+</body>
+</html>
